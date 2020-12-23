@@ -1,0 +1,16 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${default}"
+            ],
+            "defines": [],
+            "compilerPath": "/home/josh/Documents/dev/swift-5.3.1-RELEASE-ubuntu20.04/usr/bin/clang",
+            "cStandard": "c11",
+            "cppStandard": "c++11",
+            "intelliSenseMode": "clang-x64"
+        }
+    ],
+    "version": 4
+}
