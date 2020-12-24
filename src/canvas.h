@@ -31,6 +31,8 @@ public slots:
     void set_status(const QString& s);
     void clear_status();
     void load_mesh(Mesh* m, bool is_reload);
+    void setYaw(float value);
+    void setTilt(float value);
 
 protected:
     void paintGL() override;
@@ -45,6 +47,7 @@ protected:
     void set_perspective(float p);
     void set_drawMode(enum DrawMode mode);
     void view_anim(float v);
+
 
 private:
     void draw_mesh();

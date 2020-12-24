@@ -268,6 +268,18 @@ void Canvas::mouseMoveEvent(QMouseEvent* event)
     mouse_pos = p;
 }
 
+void Canvas::setYaw(float value)
+{
+    yaw = fmod(value, 360.0);
+    update();
+}
+
+void Canvas::setTilt(float value)
+{
+    tilt = fmod(value, 360.0);
+    update();
+}
+
 void Canvas::wheelEvent(QWheelEvent *event)
 {
     // Find GL position before the zoom operation

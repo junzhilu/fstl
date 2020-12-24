@@ -5,6 +5,7 @@
 #include <QActionGroup>
 #include <QFileSystemWatcher>
 #include <QCollator>
+#include <QTimer>
 
 class Canvas;
 
@@ -46,6 +47,7 @@ private slots:
     void on_load_recent(QAction* a);
     void on_loaded(const QString& filename);
     void on_save_screenshot();
+    void on_make_turntable();
 
 private:
     void rebuild_recent_files();
@@ -65,6 +67,7 @@ private:
     QAction* const reload_action;
     QAction* const autoreload_action;
     QAction* const save_screenshot_action;
+    QAction* const make_turntable_action;
 
     QMenu* const recent_files;
     QActionGroup* const recent_files_group;

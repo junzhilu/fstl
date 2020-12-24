@@ -1,4 +1,6 @@
 #include <QMenuBar>
+#include <QString>
+#include <iostream>
 
 #include "window.h"
 #include "canvas.h"
@@ -21,6 +23,7 @@ Window::Window(QWidget *parent) :
     reload_action(new QAction("Reload", this)),
     autoreload_action(new QAction("Autoreload", this)),
     save_screenshot_action(new QAction("Save Screenshot", this)),
+    make_turntable_action(new QAction("Make Turntable", this)),
     recent_files(new QMenu("Open recent", this)),
     recent_files_group(new QActionGroup(this)),
     recent_files_clear_action(new QAction("Clear recent files", this)),
@@ -75,6 +78,10 @@ Window::Window(QWidget *parent) :
     QObject::connect(save_screenshot_action, &QAction::triggered, 
         this, &Window::on_save_screenshot);
     
+    make_turntable_action->setCheckable(false);
+        QObject::connect(make_turntable_action, &QAction::triggered, 
+        this, &Window::on_make_turntable);
+
     rebuild_recent_files();
 
     auto file_menu = menuBar()->addMenu("File");
@@ -84,6 +91,7 @@ Window::Window(QWidget *parent) :
     file_menu->addAction(reload_action);
     file_menu->addAction(autoreload_action);
     file_menu->addAction(save_screenshot_action);
+    file_menu->addAction(make_turntable_action);
     file_menu->addAction(quit_action);
 
     auto view_menu = menuBar()->addMenu("View");
@@ -312,6 +320,51 @@ void Window::on_save_screenshot()
     {
         QMessageBox::warning(this, tr("Error Saving Image"), tr("Unable to save screen shot image."));
     }
+}
+
+void Window::on_make_turntable()
+{
+    auto file_name = QFileDialog::getSaveFileName(
+        this, 
+        tr("Save Turntable Image"),
+        QStandardPaths::standardLocations(QStandardPaths::StandardLocation::PicturesLocation).first(),
+                                            "Images (*.png *.jpg)");
+
+    auto get_file_extension = [](const std::string& file_name) -> std::string
+    {
+        const auto location = std::find(file_name.rbegin(), file_name.rend(), '.');
+        if (location == file_name.rend())
+        {
+            return "";
+        }
+
+        const auto index = std::distance(file_name.rbegin(), location);
+        return file_name.substr(file_name.size() - index);
+    };
+
+    QString extension = QString::fromStdString(get_file_extension(file_name.toStdString()));
+    if(extension.isEmpty() || (extension != "png" && extension != "jpg"))
+    {
+        file_name.append(".png");
+        extension = "png";
+    }
+
+    canvas->setYaw(0.0);
+    canvas->setTilt(45.0);
+    std::cout<<"init filename: "<<file_name.toUtf8().constData()<<std::endl;
+    for(int i=1; i< 360;i++){
+        canvas->setYaw(i);
+        QString new_filename = file_name;
+        new_filename.replace(extension, QString::number(i).rightJustified(4, '0').append(QString(".")).append(extension));
+        std::cout<<"output filename: "<<new_filename.toUtf8().constData()<<std::endl;
+        const auto image = canvas->grabFramebuffer();
+        const auto save_ok = image.save(new_filename);
+        if(!save_ok)
+        {
+            QMessageBox::warning(this, tr("Error Saving Image"), tr("Unable to save screen shot image."));
+        }
+    }
+
 }
 
 void Window::rebuild_recent_files()
