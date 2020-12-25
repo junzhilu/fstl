@@ -140,7 +140,7 @@ Window::Window(QWidget *parent) :
     auto help_menu = menuBar()->addMenu("Help");
     help_menu->addAction(about_action);
 
-    resize(600, 400);
+    resize(720, 576);
 }
 
 void Window::on_open()
@@ -324,11 +324,13 @@ void Window::on_save_screenshot()
 
 void Window::on_make_turntable()
 {
+    QFileInfo fileInfo(current_file);
+    auto src_dir = fileInfo.absoluteDir().absolutePath();
+
+
     auto file_name = QFileDialog::getSaveFileName(
         this, 
-        tr("Save Turntable Image"),
-        QStandardPaths::standardLocations(QStandardPaths::StandardLocation::PicturesLocation).first(),
-                                            "Images (*.png *.jpg)");
+        tr("Save Turntable Image"), src_dir, "Images (*.png *.jpg)");
 
     auto get_file_extension = [](const std::string& file_name) -> std::string
     {
@@ -352,10 +354,12 @@ void Window::on_make_turntable()
     canvas->setYaw(0.0);
     canvas->setTilt(45.0);
     std::cout<<"init filename: "<<file_name.toUtf8().constData()<<std::endl;
-    for(int i=1; i< 360;i++){
+    int j = 1;
+    // Turning Yaw
+    for(int i=6; i< 360;i+=6){
         canvas->setYaw(i);
         QString new_filename = file_name;
-        new_filename.replace(extension, QString::number(i).rightJustified(4, '0').append(QString(".")).append(extension));
+        new_filename.replace(extension, QString::number(j).rightJustified(4, '0').append(QString(".")).append(extension));
         std::cout<<"output filename: "<<new_filename.toUtf8().constData()<<std::endl;
         const auto image = canvas->grabFramebuffer();
         const auto save_ok = image.save(new_filename);
@@ -363,6 +367,22 @@ void Window::on_make_turntable()
         {
             QMessageBox::warning(this, tr("Error Saving Image"), tr("Unable to save screen shot image."));
         }
+        j++;
+    }
+
+    // Turning Tilt
+    for(int i=45; i< 405;i+=6){
+        canvas->setTilt(i);
+        QString new_filename = file_name;
+        new_filename.replace(extension, QString::number(j).rightJustified(4, '0').append(QString(".")).append(extension));
+        std::cout<<"output filename: "<<new_filename.toUtf8().constData()<<std::endl;
+        const auto image = canvas->grabFramebuffer();
+        const auto save_ok = image.save(new_filename);
+        if(!save_ok)
+        {
+            QMessageBox::warning(this, tr("Error Saving Image"), tr("Unable to save screen shot image."));
+        }
+        j++;
     }
 
 }

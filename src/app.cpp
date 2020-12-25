@@ -1,5 +1,7 @@
 #include <QDebug>
 #include <QFileOpenEvent>
+#include <QCommandLineParser>
+#include <QCommandLineOption>
 
 #include "app.h"
 #include "window.h"
@@ -7,6 +9,7 @@
 App::App(int& argc, char *argv[]) :
     QApplication(argc, argv), window(new Window())
 {
+
     if (argc > 1)
         window->load_stl(argv[1]);
     else
